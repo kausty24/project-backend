@@ -1,5 +1,6 @@
 package com.app.entities;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -16,8 +17,10 @@ import lombok.ToString;
 @Table(name = "customers")
 public class Customer extends BaseEntity {
 	private String name;
+	@Column(unique = true)
 	private String email;
 	private String password;
+	@Column(unique = true)
 	private String contactNo;
 	private String address;
 	private String city;
