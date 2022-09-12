@@ -25,4 +25,7 @@ public class Vendor extends BaseEntity {
 	private String password;
 	private String contactNo;
 	private String address;
+	private String city;
+	private String state;
+	private String pincode;
 }
