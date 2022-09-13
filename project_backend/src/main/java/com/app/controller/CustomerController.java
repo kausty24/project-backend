@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.dto.CustomerRegistrationDTO;
+import com.app.dto.LoginRequest;
 import com.app.service.ICustomerService;
 
 @RestController
@@ -26,5 +27,8 @@ public class CustomerController {
 		return new ResponseEntity<>(custService.addNewCustomer(customerDetails), HttpStatus.CREATED);
 	}
 	
-	
+	@PostMapping("/login/customer")
+	public ResponseEntity<?> loginCustomer(@RequestBody @Valid LoginRequest loginCredentials) {
+		return new ResponseEntity<>(custService.authenticateCustomer(loginCredentials), HttpStatus.OK);
+	}
 }

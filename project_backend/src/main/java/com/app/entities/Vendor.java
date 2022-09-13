@@ -4,6 +4,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -20,7 +21,7 @@ import lombok.ToString;
 @ToString
 @Table(name = "vendors")
 public class Vendor extends BaseEntity {
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER)
 	private Set<Service> services;
 	private String name;
 	@Column(unique = true)

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.app.dto.LoginRequest;
 import com.app.dto.VendorRegistrationDTO;
 import com.app.entities.ServiceType;
 import com.app.service.IVendorService;
@@ -32,6 +33,11 @@ public class VendorController {
 	@GetMapping("/reg/list")
 	public ResponseEntity<?> getAllServices() {
 		return new ResponseEntity<>(ServiceType.values(), HttpStatus.OK);
+	}
+	
+	@PostMapping("/login/vendor")
+	public ResponseEntity<?> loginCustomer(@RequestBody @Valid LoginRequest loginCredentials) {
+		return new ResponseEntity<>(vendorService.authenticateVendor(loginCredentials), HttpStatus.OK);
 	}
 	
 	

@@ -10,7 +10,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.app.custom_exception.ResourceNotFoundException;
-import com.app.custom_exception.UserHandlingException;
 import com.app.dto.ErrorResponse;
 
 @ControllerAdvice
@@ -26,25 +25,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	}
 
-	// how to handle custom exception : eg : UserHandlingException : by adding our
-	// own method , annotated with @ExcHandler
-	@ExceptionHandler(UserHandlingException.class)
-	public ResponseEntity<?> handleUserHandlingException(UserHandlingException e) {
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new ErrorResponse("User Handling Error ", e.getMessage()));
-	}
 	
 	//handle res not found exc
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException e) {
-		return ResponseEntity.status(HttpStatus.NOT_FOUND)
-				.body(new ErrorResponse("Invalid a/c no ", e.getMessage()));
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+				.body(new ErrorResponse("Resource Not found", e.getMessage()));
 	}
 	//catch all 
-	@ExceptionHandler(RuntimeException.class)
-	public ResponseEntity<?> handleRuntimeException(RuntimeException e) {
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new ErrorResponse("Server side Error ", e.getMessage()));
-	}
+//	@ExceptionHandler(RuntimeException.class)
+//	public ResponseEntity<?> handleRuntimeException(RuntimeException e) {
+//		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//				.body(new ErrorResponse("Server side Error ", e.getMessage()));
+//	}
 
 }
