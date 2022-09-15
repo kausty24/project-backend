@@ -1,5 +1,7 @@
 package com.app.service;
 
+import java.time.LocalDateTime;
+
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
@@ -35,6 +37,7 @@ public class OrderServices implements IOrderService {
 				.orElseThrow(() -> new ResourceNotFoundException("Customer Not Found")));
 		transientOrder.setService(serviceRepo.findByServiceType(orderDetails.getServiceType())
 				.orElseThrow(() -> new ResourceNotFoundException("Service Not Found")));
+		transientOrder.setOrderPlacedTime(LocalDateTime.now());
 		Order persistentOrder = orderRepo.save(transientOrder);
 		return persistentOrder;
 	}

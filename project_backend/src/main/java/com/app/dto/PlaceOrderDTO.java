@@ -19,8 +19,6 @@ public class PlaceOrderDTO {
 	private ServiceType serviceType;
 	private int lockoutTimeInMinutes;
 	private String customerComments;
-	private double budget;
-	private LocalDateTime orderPlacedTime; 
-	
+	private double budget;	
 }
 
