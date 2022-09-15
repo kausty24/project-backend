@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.dto.CustomerRegistrationDTO;
+import com.app.dto.CustomerUpdateDTO;
+import com.app.dto.FindContact;
+import com.app.dto.FindEmail;
 import com.app.dto.LoginRequest;
 import com.app.service.ICustomerService;
 
@@ -27,8 +30,23 @@ public class CustomerController {
 		return new ResponseEntity<>(custService.addNewCustomer(customerDetails), HttpStatus.CREATED);
 	}
 	
+	@PostMapping("/edit/customer")
+	public ResponseEntity<?> updateCustomer(@RequestBody @Valid CustomerUpdateDTO updateDetails){
+		return new ResponseEntity<>(custService.updateCustomerDetail(updateDetails),HttpStatus.CREATED);
+	}
+	
 	@PostMapping("/login/customer")
 	public ResponseEntity<?> loginCustomer(@RequestBody @Valid LoginRequest loginCredentials) {
 		return new ResponseEntity<>(custService.authenticateCustomer(loginCredentials), HttpStatus.OK);
+	}
+	
+	@PostMapping("/edit/customer/emailExist")
+	public ResponseEntity<?> searchEmail(@RequestBody @Valid FindEmail emailId){
+		return new ResponseEntity<>(custService.findEmailId(emailId),HttpStatus.OK);
+	}
+	
+	@PostMapping("/edit/customer/contactExists")
+	public ResponseEntity<?> searchContact(@RequestBody @Valid FindContact contactNo){
+		return new ResponseEntity<>(custService.findContactNo(contactNo),HttpStatus.OK);
 	}
 }

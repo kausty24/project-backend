@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 import com.app.custom_exception.ResourceNotFoundException;
 import com.app.dao.CustomerRepository;
 import com.app.dto.CustomerRegistrationDTO;
+import com.app.dto.CustomerUpdateDTO;
+import com.app.dto.FindContact;
+import com.app.dto.FindEmail;
 import com.app.dto.LoginRequest;
 import com.app.entities.Customer;
 
@@ -31,7 +34,33 @@ public class CustomerServiceImpl implements ICustomerService{
 
 	@Override
 	public Customer authenticateCustomer(LoginRequest loginCredentials) {
-		return custRepo.findByEmailAndPassword(loginCredentials.getEmail(), loginCredentials.getPassword()).orElseThrow(() -> new ResourceNotFoundException("Invalid Credentials"));
+		return custRepo.findByEmailAndPassword(loginCredentials.getEmail(), loginCredentials.getPassword())
+				.orElseThrow(() -> new ResourceNotFoundException("Invalid Credentials"));
 	}
 
+	@Override
+	public Customer updateCustomerDetail(CustomerUpdateDTO updateDetails) {
+		Customer originalCustomer = custRepo.findById(updateDetails.getCustomerId()).orElseThrow(() -> new ResourceNotFoundException("customer not found"));
+		originalCustomer.setEmail(updateDetails.getEmail());
+		originalCustomer.setAddress(updateDetails.getAddress());
+		originalCustomer.setCity(updateDetails.getCity());
+		originalCustomer.setContactNo(updateDetails.getContactNo());
+		originalCustomer.setName(updateDetails.getName());
+		originalCustomer.setPincode(updateDetails.getPincode());
+		originalCustomer.setState(updateDetails.getState());
+		Customer persistentCustomer = custRepo.save(originalCustomer);
+		return persistentCustomer;
+	}
+	
+	@Override
+	public Customer findEmailId(FindEmail emailId) {
+		return custRepo.findByEmail(emailId.getEmail())
+				.orElseThrow(() -> new ResourceNotFoundException("Email not found"));
+	}
+
+	@Override
+	public Customer findContactNo(FindContact contactNo) {
+		return custRepo.findByContactNo(contactNo.getContactNo())
+				.orElseThrow(() -> new ResourceNotFoundException("Contact not found")); 
+	}	
 }
