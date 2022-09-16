@@ -27,8 +27,17 @@ public class Order extends BaseEntity {
 	private int lockoutTimeInMinutes;
 	@OneToOne
 	private Vendor finalVendor;
-	private double finalAmount;
+	@Column(nullable = true)
+	private Double finalAmount;
 	private String vendorComments;
 	@Column(unique = true)
 	private String tempTableName;
+	// to be added fields - orderStatus, Rating, ExpectedBudget, OrderFinalizedTime
+	@Column(nullable = true)
+	private Double budget;
+	private LocalDateTime orderFinalizedTime;
+	@OneToOne
+	private OrderStatus orderStatus;
+	@Column(nullable = true)
+	private Double rating;
 }
