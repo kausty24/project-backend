@@ -2,6 +2,8 @@ package com.app.service;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -24,7 +26,6 @@ import com.app.entities.OrderStatus;
 import com.app.entities.OrderStatusType;
 import com.app.entities.Vendor;
 
-
 @Service
 @Transactional
 public class OrderServices implements IOrderService {
@@ -39,10 +40,10 @@ public class OrderServices implements IOrderService {
 	private OrderStatusRepository orderStatusRepo;
 	@Autowired
 	private VendorRepository vendorRepo;
-	
+
 	@Autowired
 	private ModelMapper mapper;
-	
+
 	@Override
 	public Order placeOrder(@Valid PlaceOrderDTO orderDetails) {
 		Order transientOrder = mapper.map(orderDetails, Order.class);
@@ -53,21 +54,43 @@ public class OrderServices implements IOrderService {
 		transientOrder.setOrderPlacedTime(LocalDateTime.now());
 		transientOrder.setOrderStatus(orderStatusRepo.findByOrderStatusType(OrderStatusType.NEW));
 		Order persistentOrder = orderRepo.save(transientOrder);
+		Timer timer = new Timer();
+		timer.scheduleAtFixedRate(new TimerTask() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				if (persistentOrder.getLockoutTimeInMinutes() == 0) {
+					System.out.println("Order-" + persistentOrder.getId() + " bidding over");
+					persistentOrder.setOrderStatus(orderStatusRepo.findByOrderStatusType(OrderStatusType.PENDING));
+					orderRepo.save(persistentOrder);
+					timer.cancel();
+				} else {
+					System.out.println("Order-" + persistentOrder.getId() + " 1 minute passed");
+					persistentOrder.setLockoutTimeInMinutes(persistentOrder.getLockoutTimeInMinutes()-1);
+					orderRepo.save(persistentOrder);
+				}
+			}
+		}, 60 * 1000, 60 * 1000);
 		return persistentOrder;
 	}
 
 	@Override
 	public Set<Order> getAllCompletedOrders(@Valid CompletedOrderDTO completedOrders) {
-		Vendor vendor = vendorRepo.findById(completedOrders.getVendorId()).orElseThrow(()-> new ResourceNotFoundException("Vendor not Found"));
-		com.app.entities.Service service = serviceRepo.findByServiceType(completedOrders.getServiceType()).orElseThrow(()-> new ResourceNotFoundException("Service Not Found"));
+		Vendor vendor = vendorRepo.findById(completedOrders.getVendorId())
+				.orElseThrow(() -> new ResourceNotFoundException("Vendor not Found"));
+		com.app.entities.Service service = serviceRepo.findByServiceType(completedOrders.getServiceType())
+				.orElseThrow(() -> new ResourceNotFoundException("Service Not Found"));
 		OrderStatus orderStatus = orderStatusRepo.findByOrderStatusType(OrderStatusType.COMPLETED);
 		return orderRepo.findByOrderStatusAndFinalVendorAndService(orderStatus, vendor, service);
 	}
 
 	@Override
 	public Set<Order> getAllPendingOrders(CompletedOrderDTO completedOrders) {
-		Vendor vendor = vendorRepo.findById(completedOrders.getVendorId()).orElseThrow(()-> new ResourceNotFoundException("Vendor not Found"));
-		com.app.entities.Service service = serviceRepo.findByServiceType(completedOrders.getServiceType()).orElseThrow(()-> new ResourceNotFoundException("Service Not Found"));
+		Vendor vendor = vendorRepo.findById(completedOrders.getVendorId())
+				.orElseThrow(() -> new ResourceNotFoundException("Vendor not Found"));
+		com.app.entities.Service service = serviceRepo.findByServiceType(completedOrders.getServiceType())
+				.orElseThrow(() -> new ResourceNotFoundException("Service Not Found"));
 		OrderStatus orderStatus = orderStatusRepo.findByOrderStatusType(OrderStatusType.PENDING);
 		return orderRepo.findByOrderStatusAndFinalVendorAndService(orderStatus, vendor, service);
 	}
@@ -75,7 +98,8 @@ public class OrderServices implements IOrderService {
 	@Override
 	public Set<Order> getAllOrderRequests(OrderRequestDTO orderRequestDTO) {
 		OrderStatus orderStatus = orderStatusRepo.findByOrderStatusType(OrderStatusType.NEW);
-		com.app.entities.Service service = serviceRepo.findByServiceType(orderRequestDTO.getServiceType()).orElseThrow(()-> new ResourceNotFoundException("Service Not Found"));
+		com.app.entities.Service service = serviceRepo.findByServiceType(orderRequestDTO.getServiceType())
+				.orElseThrow(() -> new ResourceNotFoundException("Service Not Found"));
 		return orderRepo.findByOrderStatusAndServiceAndCustomerCity(orderStatus, service, orderRequestDTO.getCity());
 	}
 
