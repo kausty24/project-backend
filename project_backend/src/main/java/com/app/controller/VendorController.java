@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.app.dto.FindContact;
+import com.app.dto.FindEmail;
 import com.app.dto.LoginRequest;
 import com.app.dto.VendorRegistrationDTO;
+import com.app.dto.VendorUpdateDTO;
 import com.app.entities.ServiceType;
 import com.app.service.IVendorService;
 
@@ -40,5 +43,18 @@ public class VendorController {
 		return new ResponseEntity<>(vendorService.authenticateVendor(loginCredentials), HttpStatus.OK);
 	}
 	
+	@PostMapping("/edit/vendor")
+	public ResponseEntity<?> updateVendor(@RequestBody @Valid VendorUpdateDTO updateDetails){
+		return new ResponseEntity<>(vendorService.updateVendorDetail(updateDetails),HttpStatus.OK);
+	}
 	
+	@PostMapping("/edit/vendor/emailExist")
+	public ResponseEntity<?> searchEmail(@RequestBody @Valid FindEmail emailId){
+		return new ResponseEntity<>(vendorService.findEmailId(emailId),HttpStatus.OK);
+	}
+	
+	@PostMapping("/edit/vendor/contactExists")
+	public ResponseEntity<?> searchContact(@RequestBody @Valid FindContact contactNo){
+		return new ResponseEntity<>(vendorService.findContactNo(contactNo),HttpStatus.OK);
+	}
 }
