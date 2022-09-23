@@ -29,7 +29,7 @@ public interface IOrderService {
 	
 	void deleteBid(DeleteBidDTO deleteBidDTO);
 	
-	void setOrderStatusCompleted(Double rating,long orderId);
+	void setOrderStatusCompleted(double rating,long orderId);
 	
 	Order finalizeBid(PlaceBidDTO finalizeBidDTO);
 	

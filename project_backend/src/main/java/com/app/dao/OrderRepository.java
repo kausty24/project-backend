@@ -14,7 +14,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	
 	public Set<Order> findByOrderStatusAndFinalVendorAndService(OrderStatus orderStatus, Vendor vendor, Service service);
 	public Set<Order> findByOrderStatusAndServiceAndCustomerCity(OrderStatus orderStatus, Service service, String city);
-	public Set<Order> findByFinalVendor(Vendor vendor);
+	public Set<Order> findByFinalVendorAndOrderStatus(Vendor vendor, OrderStatus orderStatus);
 	public Set<Order> findByCustomerAndOrderStatus(Customer customer, OrderStatus orderStatus);
 	
 	// adding method for temporary table creation

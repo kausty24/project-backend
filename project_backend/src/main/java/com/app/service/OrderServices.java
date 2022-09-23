@@ -1,10 +1,13 @@
 package com.app.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.OptionalDouble;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -30,6 +33,7 @@ import com.app.entities.Order;
 import com.app.entities.OrderStatus;
 import com.app.entities.OrderStatusType;
 import com.app.entities.Vendor;
+
 
 @Service
 @Transactional
@@ -175,14 +179,17 @@ public class OrderServices implements IOrderService {
 	}
 
 	@Override
-	public void setOrderStatusCompleted(Double rating, long orderId) {
+	public void setOrderStatusCompleted(double rating, long orderId) {
 		// TODO Auto-generated method stub
 		Order order = orderRepo.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Order Not Found"));
 		order.setOrderStatus(orderStatusRepo.findByOrderStatusType(OrderStatusType.COMPLETED));
 		order.setRating(rating);
 		// logic to update the vendor Rating when order status is set to completed by the customer and rating is provided
-		Double avgRating = orderRepo.findByFinalVendor(order.getFinalVendor()).stream().mapToDouble(Order::getRating).average().orElse(2.5);
-		order.getFinalVendor().setRating(avgRating);
+		OptionalDouble optionalRating = orderRepo.findByFinalVendorAndOrderStatus(order.getFinalVendor(), orderStatusRepo.findByOrderStatusType(OrderStatusType.COMPLETED))
+			.stream().mapToDouble(o->o.getRating()).average();
+		System.out.println("5" + " | " + optionalRating);
+		if(optionalRating.isPresent())
+			order.getFinalVendor().setRating(optionalRating.getAsDouble());		
 	}
 
 	@Override

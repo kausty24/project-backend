@@ -71,9 +71,9 @@ public class OrderController {
 		return new ResponseEntity<>(null, HttpStatus.OK);
 	}
 
-	@PostMapping("/order/completed/{orderId}")
-	public ResponseEntity<?> setOrderStatusCompleted(@RequestBody RatingDTO ratingDTO, @PathVariable long orderId) {
-		orderService.setOrderStatusCompleted(ratingDTO.getRating(), orderId);
+	@PostMapping("/order/setcompleted")
+	public ResponseEntity<?> setOrderStatusCompleted(@RequestBody RatingDTO ratingDTO) {
+		orderService.setOrderStatusCompleted(ratingDTO.getRating(), ratingDTO.getOrderId());
 		return new ResponseEntity<>(null, HttpStatus.OK);
 	}
 
