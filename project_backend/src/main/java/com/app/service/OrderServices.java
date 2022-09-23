@@ -1,13 +1,11 @@
 package com.app.service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
@@ -70,16 +68,18 @@ public class OrderServices implements IOrderService {
 
 			@Override
 			public void run() {
+				
+				Order order = orderRepo.findById(persistentOrder.getId()).orElseThrow(() -> new ResourceNotFoundException("Order Not Found"));
 				// TODO Auto-generated method stub
-				if (persistentOrder.getLockoutTimeInMinutes() == 0) {
-					System.out.println("Order-" + persistentOrder.getId() + " bidding over");
-					persistentOrder.setOrderStatus(orderStatusRepo.findByOrderStatusType(OrderStatusType.PENDING));
-					orderRepo.save(persistentOrder);
+				if (order.getLockoutTimeInMinutes() == 0) {
+					System.out.println("Order-" + order.getId() + " bidding over");
+					order.setOrderStatus(orderStatusRepo.findByOrderStatusType(OrderStatusType.PENDING));
+					orderRepo.save(order);
 					timer.cancel();
 				} else {
-					System.out.println("Order-" + persistentOrder.getId() + " 1 minute passed");
-					persistentOrder.setLockoutTimeInMinutes(persistentOrder.getLockoutTimeInMinutes() - 1);
-					orderRepo.save(persistentOrder);
+					System.out.println("Order-" + order.getId() + " 1 minute passed");
+					order.setLockoutTimeInMinutes(order.getLockoutTimeInMinutes() - 1);
+					orderRepo.save(order);
 				}
 			}
 		}, 60 * 1000, 60 * 1000);
@@ -204,6 +204,7 @@ public class OrderServices implements IOrderService {
 		order.setOrderFinalizedTime(LocalDateTime.now());
 		order.setVendorComments(finalizeBidDTO.getVendorComments());
 		order.setOrderStatus(orderStatusRepo.findByOrderStatusType(OrderStatusType.PENDING));
+		order.setLockoutTimeInMinutes(0);
 		return order;
 	}
 
