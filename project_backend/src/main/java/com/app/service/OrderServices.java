@@ -180,6 +180,9 @@ public class OrderServices implements IOrderService {
 		Order order = orderRepo.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Order Not Found"));
 		order.setOrderStatus(orderStatusRepo.findByOrderStatusType(OrderStatusType.COMPLETED));
 		order.setRating(rating);
+		// logic to update the vendor Rating when order status is set to completed by the customer and rating is provided
+		Double avgRating = orderRepo.findByFinalVendor(order.getFinalVendor()).stream().mapToDouble(Order::getRating).average().orElse(2.5);
+		order.getFinalVendor().setRating(avgRating);
 	}
 
 	@Override
@@ -201,6 +204,12 @@ public class OrderServices implements IOrderService {
 	public Set<Bid> getAllBidsByOrder(long orderId) {
 		Order order = orderRepo.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Order Not Found"));
 		return bidRepo.findByOrder(order);
+	}
+
+	@Override
+	public Set<Order> findOrdersByCustomerAndStatus(long customerId, OrderStatusType orderStatusType) {
+		return orderRepo.findByCustomerAndOrderStatus(custRepo.findById(customerId).orElseThrow(()-> new ResourceNotFoundException("Invalid customer Id")),
+				orderStatusRepo.findByOrderStatusType(orderStatusType));
 	}
 
 }

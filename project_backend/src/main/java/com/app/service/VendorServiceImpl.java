@@ -40,6 +40,7 @@ public class VendorServiceImpl implements IVendorService {
 				.map(e->serviceRepo.findByServiceType(e).orElseThrow(()->new com.app.custom_exception.ResourceNotFoundException("No Service Found")))
 				.collect(Collectors.toSet());
 		transientVendor.setServices(services);
+		transientVendor.setRating(3.0); // default rating
 		Vendor persistentVendor = vendorRepo.save(transientVendor);
 		return persistentVendor;
 	}

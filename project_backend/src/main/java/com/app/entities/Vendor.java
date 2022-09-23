@@ -33,6 +33,9 @@ public class Vendor extends BaseEntity {
 	private String city;
 	private String state;
 	private String pincode;
+	// add rating
+	@Column(nullable = true)
+	private Double rating;
 	
 	public void addService(ServiceType serv) {
 		Service service = new Service();

@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.app.entities.Customer;
 import com.app.entities.Order;
 import com.app.entities.OrderStatus;
 import com.app.entities.Service;
@@ -13,6 +14,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 	
 	public Set<Order> findByOrderStatusAndFinalVendorAndService(OrderStatus orderStatus, Vendor vendor, Service service);
 	public Set<Order> findByOrderStatusAndServiceAndCustomerCity(OrderStatus orderStatus, Service service, String city);
+	public Set<Order> findByFinalVendor(Vendor vendor);
+	public Set<Order> findByCustomerAndOrderStatus(Customer customer, OrderStatus orderStatus);
 	
 	// adding method for temporary table creation
 //	@Modifying
