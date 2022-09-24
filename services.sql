@@ -10,6 +10,6 @@ insert into service values(default,"VEGETABLE_VENDOR");
 insert into service values(default,"SALON");
 
 INSERT INTO order_status values(default, "NEW");
-INSERT INTO order_status values(default, "BIDDING_UNDER_PROCESS");
+INSERT INTO order_status values(default, "BIDDING_OVER");
 INSERT INTO order_status values(default, "PENDING");
 INSERT INTO order_status values(default, "COMPLETED");
